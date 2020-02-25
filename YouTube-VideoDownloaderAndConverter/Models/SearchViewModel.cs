@@ -8,7 +8,7 @@ namespace YouTube_VideoDownloaderAndConverter.Models
     public class SearchViewModel
     {
 
-        public string Link { get; set; }
+        public Uri Link { get; set; }
 
     }
 }

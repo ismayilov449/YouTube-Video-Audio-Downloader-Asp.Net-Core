@@ -1,1 +1,32 @@
-﻿<h1>Downloading...</h1>
+﻿@model DetailsViewModel
+
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">@Model.FullName</h5>
+        @*<p> @Model.Size </p>
+        <p> @Model.SizeString </p>*@
+
+        <form asp-action="DownloadFile" asp-controller="Download" method="post">
+            <div style="display:flex;height:50px">
+                <p> Choose file type </p>
+                <select asp-for="@Model.Format" style="height:initial">
+                    <option disabled selected>Choose..</option>
+                    <option>@FileType.Mp3</option>
+                    <option>@FileType.Mp4</option>
+                </select>
+            </div>
+            <input type="hidden" asp-for="@Model.Link" />
+            <input type="hidden" asp-for="@Model.Resolution" />
+            <input type="hidden" asp-for="@Model.FullName" />
+
+            @*<div class="form-group">
+                <label for="file">Download there</label>
+                <input type="file" asp-for="@Model.FilePath" webkitdirectory directory multiple >
+
+            </div>*@
+
+            <button style="margin:20px 0 0 0" type="submit" class="btn btn-primary">Download</button>
+        </form>
+        <a asp-action="SearchFile" asp-controller="Download" class="btn btn-primary">Convert next</a>
+    </div>
+</div>

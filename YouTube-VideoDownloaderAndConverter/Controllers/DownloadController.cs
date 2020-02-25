@@ -23,24 +23,48 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SearchFile(SearchViewModel searchViewModel)
-        {
 
-            Downloader downloader = new Downloader();
-            downloader.SearchFile(searchViewModel.Link);
-              
+        [HttpGet]
+        public async Task<IActionResult> SearchFile()
+        {
 
             return View();
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> DownloadFile(LinkAndTypeViewModel file)
+        public async Task<IActionResult> SearchFile(SearchViewModel searchViewModel)
+        {
+            if(searchViewModel == null)
+            {
+                return View();
+            }
+
+            Downloader downloader = new Downloader();
+            var details = downloader.SearchFile(searchViewModel.Link);
+
+
+            return RedirectToAction("DownloadFile", new { link = details.Link});
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFile(Uri link)
         {
 
 
-            return View();
+            Downloader downloader = new Downloader();
+            var details = downloader.SearchFile(link);
+
+            return View(details);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DownloadFile(DetailsViewModel file)
+        {
+            Downloader downloader = new Downloader();
+            downloader.DownloadFile(file.Link,file.FilePath);
+
+            return RedirectToAction("SearchFile");
         }
     }
 }

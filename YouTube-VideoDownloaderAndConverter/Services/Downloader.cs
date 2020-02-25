@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -14,22 +15,26 @@ namespace YouTube_VideoDownloaderAndConverter.Services
     public class Downloader
     {
 
-        public DetailsViewModel SearchFile(string link)
+        public DetailsViewModel SearchFile(Uri link)
         {
-            link = link.Replace("watch?", "");
-            link = link.Replace("=", "/");
+            string templink = link.OriginalString;
+
+            templink = templink.Replace("watch?", "");
+            templink = templink.Replace("=", "/");
 
 
             
             var youTube = YouTube.Default; // starting point for YouTube actions
-            var video = youTube.GetVideo(link); // gets a Video object with info about the video
+            var video = youTube.GetVideo(templink); // gets a Video object with info about the video
+
 
 
             var details = new DetailsViewModel()
             {
                 FullName = video.FullName,
-
+                Link = new Uri(templink, UriKind.Absolute),
                 Resolution = video.Resolution
+               
             };
               if (FileType.Mp4.ToString() == video.Format.ToString())
             {
@@ -44,26 +49,35 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         }
 
 
-        public void DownloadFile(string link)
-        {
-            //www.youtube.com / watch ? v = xxxx
-
-            //www.youtube.com / v / xxxx
-
-            link = link.Replace("watch?", "");
-            link = link.Replace("=", "/");
+        public void DownloadFile(Uri link,string filePath)
+        { 
 
              
-                var youTube = YouTube.Default; // starting point for YouTube actions
-                var video = youTube.GetVideo(link); // gets a Video object with info about the video
-                File.WriteAllBytes(@"C:\Users\Rufat\source\repos\YouTube-VideoDownloaderAndConverter\YouTube-VideoDownloaderAndConverter\Downloads\" + video.FullName, video.GetBytes());
-              
+            string templink = link.OriginalString;
 
+            templink = templink.Replace("watch?", "");
+            templink = templink.Replace("=", "/");
+
+            var youTube = YouTube.Default; // starting point for YouTube actions
+
+            
+
+                var video = youTube.GetVideo(templink); // gets a Video object with info about the video
+
+           
+
+            var currentPath = Directory.GetCurrentDirectory();
+
+                File.WriteAllBytes(currentPath + @"\Downloads\" + video.FullName, video.GetBytes());
+               
         }
 
- 
+        static double ConvertBytesToMegabytes(long bytes)
+        {
+            return (bytes / 1024f) / 1024f;
+        }
+
     }
-
-
+     
 }
 

@@ -35,7 +35,7 @@ namespace YouTube_VideoDownloaderAndConverter
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Download}/{action=SearchFile}/{id?}");
             });
 
         }
