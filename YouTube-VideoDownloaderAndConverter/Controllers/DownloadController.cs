@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YouTube_VideoDownloaderAndConverter.Models;
 using YouTube_VideoDownloaderAndConverter.Services;
@@ -34,7 +35,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
         [HttpPost]
         public async Task<IActionResult> SearchFile(SearchViewModel searchViewModel)
         {
-            if(searchViewModel == null)
+            if (searchViewModel == null)
             {
                 return View();
             }
@@ -42,8 +43,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
             Downloader downloader = new Downloader();
             var details = downloader.SearchFile(searchViewModel.Link);
 
-
-            return RedirectToAction("DownloadFile", new { link = details.Link});
+            return RedirectToAction("DownloadFile", new { link = details.Link });
         }
 
 
@@ -59,10 +59,19 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DownloadFile(DetailsViewModel file)
+        public async Task<IActionResult> DownloadFile(DetailsViewModel detailsViewModel, List<IFormFile> files)
         {
-            Downloader downloader = new Downloader();
-            downloader.DownloadFile(file.Link,file.FilePath);
+
+        
+             Downloader downloader = new Downloader();
+            await downloader.DownloadFile(detailsViewModel.Link, detailsViewModel.FilePath,files);
+
+            
+          
+
+            // process uploaded files
+            // Don't rely on or trust the FileName property without validation.
+
 
             return RedirectToAction("SearchFile");
         }

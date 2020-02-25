@@ -8,6 +8,11 @@ namespace YouTube_VideoDownloaderAndConverter.Models
 {
     public class DetailsViewModel
     {
+        public DetailsViewModel()
+        {
+
+        }
+
         public string FullName { get; set; }
 
         public Uri Link { get; set; }

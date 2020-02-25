@@ -15,7 +15,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
     public class Downloader
     {
 
-        public DetailsViewModel SearchFile(Uri link)
+        public  DetailsViewModel SearchFile(Uri link)
         {
             string templink = link.OriginalString;
 
@@ -25,16 +25,18 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 
             
             var youTube = YouTube.Default; // starting point for YouTube actions
-            var video = youTube.GetVideo(templink); // gets a Video object with info about the video
+            var video =  youTube.GetVideo(templink); // gets a Video object with info about the video
 
+            var currentPath = Directory.GetCurrentDirectory();
+             
 
-
-            var details = new DetailsViewModel()
+            DetailsViewModel details = new DetailsViewModel()
             {
                 FullName = video.FullName,
                 Link = new Uri(templink, UriKind.Absolute),
-                Resolution = video.Resolution
-               
+                Resolution = video.Resolution,
+                FilePath = currentPath + @"\Downloads\" + video.FullName
+
             };
               if (FileType.Mp4.ToString() == video.Format.ToString())
             {
@@ -45,11 +47,12 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 details.Format = FileType.Mp3;
             }
 
-            return  details;
+
+            return details;
         }
 
 
-        public void DownloadFile(Uri link,string filePath)
+        public async Task DownloadFile(Uri link,string FilePath, List<IFormFile> files)
         { 
 
              
@@ -59,22 +62,54 @@ namespace YouTube_VideoDownloaderAndConverter.Services
             templink = templink.Replace("=", "/");
 
             var youTube = YouTube.Default; // starting point for YouTube actions
-
-            
-
-                var video = youTube.GetVideo(templink); // gets a Video object with info about the video
-
-           
-
+             
+            var video = youTube.GetVideo(templink); // gets a Video object with info about the video
+         
             var currentPath = Directory.GetCurrentDirectory();
+           
+            byte[] current = await video.GetBytesAsync();
 
-                File.WriteAllBytes(currentPath + @"\Downloads\" + video.FullName, video.GetBytes());
-               
+            await File.WriteAllBytesAsync(currentPath + @"\Downloads\" + video.FullName,current);
+
+            UploadToServer uploadToServer = new UploadToServer(currentPath + @"\Downloads\" + video.FullName);
+
+            long size = files.Sum(f => f.Length);
+
+
+            var filePaths = new List<string>();
+            foreach (var formFile in files)
+            {
+                if (formFile.Length > 0)
+                {
+                    // full path to file in temp location
+                    var filePath = FilePath; //we are using Temp file name just for the example. Add your own file path.
+                    filePaths.Add(filePath);
+
+                    using (var stream = new MemoryStream(current))
+                    {
+                        
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+            }
+
         }
 
-        static double ConvertBytesToMegabytes(long bytes)
+        public string FormatFileSize(byte[] bytes)
         {
-            return (bytes / 1024f) / 1024f;
+          
+
+            if (bytes.Count() >= 1000000000)
+            {
+                return (bytes.Count() / 1000000000).ToString().Substring(0,3) + " GB";
+            }
+
+            if (bytes.Count() >= 1000000)
+            {
+                return (bytes.Count() / 1000000).ToString().Substring(0, 3) + " MB";
+            }
+
+            return (bytes.Count() / 1000).ToString().Substring(0, 3) + " KB";
         }
 
     }
