@@ -93,17 +93,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 
             await uploadToServerModel.OnPostUploadAsync(current,video.FullName);
 
-            //IndexModel indexModel = new IndexModel(fileProvider);
-
-            //indexModel.OnGetDownloadPhysical(uploadToServerModel.FileUpload.FormFile.FileName.ToString());
-            
-
-
-            //await File.WriteAllBytesAsync(currentPath + @"\Downloads\" + video.FullName,current);
-
-            //UploadToServerModel uploadToServer = new UploadToServerModel();
-
-            //await uploadToServer.UploadFile(files);
+            ;
 
 
         }

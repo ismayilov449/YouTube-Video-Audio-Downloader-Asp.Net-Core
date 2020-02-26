@@ -81,11 +81,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
              Downloader downloader = new Downloader(fileProvider, configuration);
             await downloader.DownloadFile(DetailsViewModelMain.Link, DetailsViewModelMain.FilePath,files,fileProvider,configuration);
              
-
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
-
-
+  
             return View(DetailsViewModelMain);
         }
 
