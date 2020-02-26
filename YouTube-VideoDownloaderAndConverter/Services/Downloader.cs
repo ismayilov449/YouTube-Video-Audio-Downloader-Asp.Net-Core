@@ -46,7 +46,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 FullName = video.FullName,
                 Link = new Uri(templink, UriKind.Absolute),
                 Resolution = video.Resolution,
-                FilePath = currentPath + @"\Downloads\" + video.FullName
+                FilePath = currentPath + @"\wwwroot\Downloads\" + video.FullName
 
             };
             IndexModel indexModel = new IndexModel(fileProvider);

@@ -26,8 +26,8 @@ namespace YouTube_VideoDownloaderAndConverter.Services
             _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
 
             // To save physical files to a path provided by configuration:
-            _targetFilePath = config.GetValue<string>("StoredFilesPath");
-
+            //_targetFilePath = config.GetValue<string>("StoredFilesPath");
+            _targetFilePath = Directory.GetCurrentDirectory() + @"\wwwroot\";
             // To save physical files to the temporary files folder, use:
             //_targetFilePath = Path.GetTempPath();
         }
