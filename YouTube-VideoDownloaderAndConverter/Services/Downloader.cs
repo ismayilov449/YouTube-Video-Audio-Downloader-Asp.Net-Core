@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +17,14 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 {
     public class Downloader
     {
+        private readonly IFileProvider fileProvider;
+        private readonly IConfiguration configuration;
+
+        public Downloader(IFileProvider _fileProvider, IConfiguration _configuration)
+        {
+            fileProvider = _fileProvider;
+            configuration = _configuration;
+        }
 
         public  DetailsViewModel SearchFile(Uri link)
         {
@@ -21,14 +32,14 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 
             templink = templink.Replace("watch?", "");
             templink = templink.Replace("=", "/");
-
-
+             
             
             var youTube = YouTube.Default; // starting point for YouTube actions
             var video =  youTube.GetVideo(templink); // gets a Video object with info about the video
 
             var currentPath = Directory.GetCurrentDirectory();
-             
+
+           
 
             DetailsViewModel details = new DetailsViewModel()
             {
@@ -38,7 +49,12 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 FilePath = currentPath + @"\Downloads\" + video.FullName
 
             };
-              if (FileType.Mp4.ToString() == video.Format.ToString())
+            IndexModel indexModel = new IndexModel(fileProvider);
+            indexModel.OnGetDownloadPhysical(details.FilePath);
+
+            details.IndexModel = indexModel;
+
+            if (FileType.Mp4.ToString() == video.Format.ToString())
             {
                 details.Format = FileType.Mp4;
             }
@@ -52,7 +68,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         }
 
 
-        public async Task DownloadFile(Uri link,string FilePath, List<IFormFile> files)
+        public async Task DownloadFile(Uri link,string FilePath, IFormFile files,IFileProvider fileProvider,IConfiguration configuration)
         { 
 
              
@@ -61,37 +77,34 @@ namespace YouTube_VideoDownloaderAndConverter.Services
             templink = templink.Replace("watch?", "");
             templink = templink.Replace("=", "/");
 
+
+
+
+
             var youTube = YouTube.Default; // starting point for YouTube actions
-             
+
             var video = youTube.GetVideo(templink); // gets a Video object with info about the video
-         
+
             var currentPath = Directory.GetCurrentDirectory();
-           
+
             byte[] current = await video.GetBytesAsync();
 
-            await File.WriteAllBytesAsync(currentPath + @"\Downloads\" + video.FullName,current);
+            UploadToServerModel uploadToServerModel = new UploadToServerModel(configuration);
 
-            UploadToServer uploadToServer = new UploadToServer(currentPath + @"\Downloads\" + video.FullName);
+            await uploadToServerModel.OnPostUploadAsync(current,video.FullName);
 
-            long size = files.Sum(f => f.Length);
+            //IndexModel indexModel = new IndexModel(fileProvider);
+
+            //indexModel.OnGetDownloadPhysical(uploadToServerModel.FileUpload.FormFile.FileName.ToString());
+            
 
 
-            var filePaths = new List<string>();
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    // full path to file in temp location
-                    var filePath = FilePath; //we are using Temp file name just for the example. Add your own file path.
-                    filePaths.Add(filePath);
+            //await File.WriteAllBytesAsync(currentPath + @"\Downloads\" + video.FullName,current);
 
-                    using (var stream = new MemoryStream(current))
-                    {
-                        
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-            }
+            //UploadToServerModel uploadToServer = new UploadToServerModel();
+
+            //await uploadToServer.UploadFile(files);
+
 
         }
 

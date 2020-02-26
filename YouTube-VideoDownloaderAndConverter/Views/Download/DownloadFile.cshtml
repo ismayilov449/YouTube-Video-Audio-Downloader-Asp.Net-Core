@@ -15,26 +15,54 @@
                 <option>@FileType.Mp4</option>
             </select>
         </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                <p>Upload one or more files using this form:</p>
-                <input type="file" name="files" multiple />
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-10">
-                <input type="submit" value="Upload" />
-            </div>
-        </div>
-
         <input type="hidden" asp-for="@Model.FilePath" />
         <input type="hidden" asp-for="@Model.Link" />
         <input type="hidden" asp-for="@Model.Resolution" />
         <input type="hidden" asp-for="@Model.FullName" />
-
-
         <button style="margin:20px 0 0 0" type="submit" class="btn btn-primary">Download</button>
+
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        Name / Path
+                    </th>
+                    <th>
+                        Size (bytes)
+                    </th>
+                    <th>
+                        <code>PhysicalFileResult</code> from storage
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var file in Model.IndexModel.PhysicalFiles)
+                {
+                    <tr>
+                        <td>
+                            <a @*asp-page="./DeletePhysicalFile" asp-route-fileName="@file.Name"*@>Delete</a>
+                        </td>
+                        <td>
+                            <b>@file.Name</b><br>
+                            @file.PhysicalPath
+                        </td>
+                        <td class="text-center">
+                            @file.Length.ToString("N0")
+                        </td>
+                        <td class="text-center">
+                            <a asp-page-handler="DownloadPhysical" asp-route-fileName="@file.Name">Download</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+
     </form>
         <a asp-action="SearchFile" asp-controller="Download" class="btn btn-primary">Convert next</a>
     </div>

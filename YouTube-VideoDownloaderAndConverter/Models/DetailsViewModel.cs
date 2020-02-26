@@ -27,5 +27,6 @@ namespace YouTube_VideoDownloaderAndConverter.Models
 
         public string SizeString { get; set; }
 
+        public IndexModel IndexModel { get; set; }
     }
 }

@@ -8,7 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using YouTube_VideoDownloaderAndConverter.Models;
 using YouTube_VideoDownloaderAndConverter.Services;
 
@@ -18,6 +21,15 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
 {
     public class DownloadController : Controller
     {
+        private readonly IFileProvider fileProvider;
+        private readonly IConfiguration configuration;
+
+        public DownloadController(IFileProvider _fileProvider,IConfiguration _configuration)
+        {
+            configuration = _configuration;
+            fileProvider = _fileProvider;
+        }
+
         // GET: /<controller>/
         public IActionResult Index()
         {
@@ -40,7 +52,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
                 return View();
             }
 
-            Downloader downloader = new Downloader();
+            Downloader downloader = new Downloader(fileProvider,configuration);
             var details = downloader.SearchFile(searchViewModel.Link);
 
             return RedirectToAction("DownloadFile", new { link = details.Link });
@@ -50,30 +62,29 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
         [HttpGet]
         public async Task<IActionResult> DownloadFile(Uri link)
         {
-
-
-            Downloader downloader = new Downloader();
+             
+            Downloader downloader = new Downloader(fileProvider, configuration);
             var details = downloader.SearchFile(link);
 
             return View(details);
         }
 
         [HttpPost]
-        public async Task<IActionResult> DownloadFile(DetailsViewModel detailsViewModel, List<IFormFile> files)
+        public async Task<IActionResult> DownloadFile(DetailsViewModel detailsViewModel, IFormFile files)
         {
 
         
-             Downloader downloader = new Downloader();
-            await downloader.DownloadFile(detailsViewModel.Link, detailsViewModel.FilePath,files);
+             Downloader downloader = new Downloader(fileProvider, configuration);
+            await downloader.DownloadFile(detailsViewModel.Link, detailsViewModel.FilePath,files,fileProvider,configuration);
 
-            
-          
+
+
 
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
 
-            return RedirectToAction("SearchFile");
+            return View(detailsViewModel);
         }
     }
 }

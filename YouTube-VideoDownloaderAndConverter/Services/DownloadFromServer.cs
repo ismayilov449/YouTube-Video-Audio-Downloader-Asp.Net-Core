@@ -1,29 +1,38 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.FileProviders;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace YouTube_VideoDownloaderAndConverter.Services
 {
-    public class DownloadFromServer
+    public class DownloadFromServer : PageModel
     {
-        public DownloadFromServer()
+        private readonly IFileProvider _fileProvider;
+
+        public DownloadFromServer( IFileProvider fileProvider)
         {
-            string currDir = Directory.GetCurrentDirectory(); 
-            WebClient request = new WebClient();
+            _fileProvider = fileProvider;
+        }
 
-            request.Credentials = new NetworkCredential("isma_ml47@itstep.edu.az", "Ismayilov1");
+        public IDirectoryContents PhysicalFiles { get; private set; }
 
-            byte[] fileData = request.DownloadData(currDir + "/mymy.txt");
+        public async Task OnGetAsync()
+        {
+            PhysicalFiles = _fileProvider.GetDirectoryContents(string.Empty);
+        }
+         
 
-            FileStream file = File.Create(currDir + "\\mymy.txt");
+        public IActionResult OnGetDownloadPhysical(string fileName)
+        {
+            var downloadFile = _fileProvider.GetFileInfo(fileName);
 
-            file.Write(fileData, 0, fileData.Length);
-
-            file.Close();
-
+            return PhysicalFile(downloadFile.PhysicalPath, MediaTypeNames.Application.Octet, fileName);
         }
     }
 }
