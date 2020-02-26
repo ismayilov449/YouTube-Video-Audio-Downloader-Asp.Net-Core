@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,6 +24,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
     {
         private readonly IFileProvider fileProvider;
         private readonly IConfiguration configuration;
+        public static DetailsViewModel DetailsViewModelMain = new DetailsViewModel();
 
         public DownloadController(IFileProvider _fileProvider,IConfiguration _configuration)
         {
@@ -66,25 +68,35 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
             Downloader downloader = new Downloader(fileProvider, configuration);
             var details = downloader.SearchFile(link);
 
+            DetailsViewModelMain = details;
+
             return View(details);
         }
 
         [HttpPost]
         public async Task<IActionResult> DownloadFile(DetailsViewModel detailsViewModel, IFormFile files)
         {
-
-        
+             
              Downloader downloader = new Downloader(fileProvider, configuration);
-            await downloader.DownloadFile(detailsViewModel.Link, detailsViewModel.FilePath,files,fileProvider,configuration);
-
-
-
+            await downloader.DownloadFile(DetailsViewModelMain.Link, DetailsViewModelMain.FilePath,files,fileProvider,configuration);
+             
 
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
 
-            return View(detailsViewModel);
+            return View(DetailsViewModelMain);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPhysical(string fileName)
+        {
+             
+            var downloadFile = fileProvider.GetFileInfo(fileName);
+             
+            return PhysicalFile(downloadFile.PhysicalPath, MediaTypeNames.Application.Octet, fileName);
+             
         }
     }
 }
