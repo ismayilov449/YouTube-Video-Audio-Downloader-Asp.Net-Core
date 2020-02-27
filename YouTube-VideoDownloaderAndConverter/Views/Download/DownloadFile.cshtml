@@ -2,44 +2,41 @@
 
 <div class="card" style="width: 300px;">
     <div class="card-body">
-        <h5 class="card-title">@Model.FullName</h5>
-        @*<p> @Model.Size </p>
-            <p> @Model.SizeString </p>*@
 
-        <form asp-action="DownloadFile" asp-controller="Download" method="post" enctype="multipart/form-data">
-            <div style="display:flex;height:50px">
-                <p> Choose file type </p>
-                <select asp-for="@Model.Format" style="height:initial">
-                    <option disabled selected>Choose..</option>
-                    <option>@FileType.Mp3</option>
-                    <option>@FileType.Mp4</option>
-                </select>
+
+        <div class="card" id="mainCard">
+
+            <div class="card-body">
+                <h5 class="card-title">  <b> @Model.FullName </b><br></h5>
+                <p class="card-text">
+                    @Model.FilePath<br>
+                    @Model.Size.ToString("N0")
+                </p>
+
+                <form asp-action="DownloadPhysical" asp-controller="Download" method="get" enctype="multipart/form-data">
+
+                    <select asp-for="@Model.Format">
+                        <option disabled selected>Choose..</option>
+                        <option>@FileType.Mp3</option>
+                        <option>@FileType.Mp4</option>
+
+                    </select>
+                    <input type="hidden" asp-for="@Model.FullName" />
+
+                    <button type="submit" class="btn btn-primary">Download to disc</button>
+
+                </form>
+                 
+                   
+
+                    @*<a asp-action="DownloadPhysical" asp-controller="Download" asp-route-fileName="@Model.FullName"  asp-route-fileType="@Model.Format" class="btn btn-primary">Download to disc</a>*@
+                 
+
+
             </div>
-            <input type="hidden" asp-for="@Model.FilePath" />
-            <input type="hidden" asp-for="@Model.Link" />
-            <input type="hidden" asp-for="@Model.Resolution" />
-            <input type="hidden" asp-for="@Model.FullName" />
-            <button style="margin:20px 0 0 0" type="submit" class="btn btn-warning">Download to browser</button>
-             
-               
-                    @foreach (var file in Model.IndexModel.PhysicalFiles)
-                    {
+        </div>
 
-                        <div class="card">
-                           
-                            <div class="card-body">
-                                <h5 class="card-title"> <b>@file.Name</b><br></h5>
-                                <p class="card-text">
-                                    @file.PhysicalPath<br>
-                                    @file.Length.ToString("N0")
-                                </p>
-                                <a asp-action="DownloadPhysical" asp-controller="Download" asp-route-fileName="@file.Name" class="btn btn-primary">Download to disc</a>
-                            </div>
-                        </div>
-                         
-                    }
-                
-        </form>
         <a asp-action="SearchFile" asp-controller="Download" class="btn btn-primary">Convert next</a>
     </div>
 </div>
+

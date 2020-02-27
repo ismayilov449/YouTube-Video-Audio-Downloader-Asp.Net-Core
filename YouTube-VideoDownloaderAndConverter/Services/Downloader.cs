@@ -68,7 +68,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         }
 
 
-        public async Task DownloadFile(Uri link,string FilePath, IFormFile files,IFileProvider fileProvider,IConfiguration configuration)
+        public async Task DownloadFile(Uri link,IConfiguration configuration)
         { 
 
              
@@ -85,15 +85,15 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 
             var video = youTube.GetVideo(templink); // gets a Video object with info about the video
 
-            var currentPath = Directory.GetCurrentDirectory();
 
             byte[] current = await video.GetBytesAsync();
 
             UploadToServerModel uploadToServerModel = new UploadToServerModel(configuration);
+             
 
             await uploadToServerModel.OnPostUploadAsync(current,video.FullName);
 
-            ;
+            
 
 
         }

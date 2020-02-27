@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using YouTube_VideoDownloaderAndConverter.Models;
+using YouTube_VideoDownloaderAndConverter.Models.Enums;
 using YouTube_VideoDownloaderAndConverter.Services;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -42,8 +43,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchFile()
         {
-           
-
+            
             return View();
         }
 
@@ -57,29 +57,30 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
 
             Downloader downloader = new Downloader(fileProvider,configuration);
             var details = downloader.SearchFile(searchViewModel.Link);
-
-            return RedirectToAction("DownloadFile", new { link = details.Link });
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> DownloadFile(Uri link)
-        {
-             
-            Downloader downloader = new Downloader(fileProvider, configuration);
-            var details = downloader.SearchFile(link);
-
             DetailsViewModelMain = details;
 
-            return View(details);
+            return RedirectToAction("DownloadFile");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DownloadFile(DetailsViewModel detailsViewModel, IFormFile files)
+
+        //[HttpGet]
+        //public async Task<IActionResult> DownloadFile(Uri link)
+        //{
+             
+        //    Downloader downloader = new Downloader(fileProvider, configuration);
+        //    var details = downloader.SearchFile(link);
+
+        //    DetailsViewModelMain = details;
+
+        //    return View(details);
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFile()
         {
              
              Downloader downloader = new Downloader(fileProvider, configuration);
-            await downloader.DownloadFile(DetailsViewModelMain.Link, DetailsViewModelMain.FilePath,files,fileProvider,configuration);
+             await downloader.DownloadFile(DetailsViewModelMain.Link,configuration);
              
   
             return View(DetailsViewModelMain);
@@ -87,13 +88,23 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> DownloadPhysical(string fileName)
+        public async Task<IActionResult> DownloadPhysical(DetailsViewModel detailsViewModel)
         {
              
-            var downloadFile = fileProvider.GetFileInfo(fileName);
-             
+            var downloadFile = fileProvider.GetFileInfo(detailsViewModel.FullName);
+            string fileExtension;
 
-            return PhysicalFile(downloadFile.PhysicalPath, MediaTypeNames.Application.Octet, fileName);
+            if(FileType.Mp3.ToString() == detailsViewModel.Format.ToString())
+            {
+                string audioFile = Path.GetFileNameWithoutExtension(detailsViewModel.FullName);
+                fileExtension = audioFile + ".mp3";
+                return PhysicalFile(downloadFile.PhysicalPath, MediaTypeNames.Application.Octet, fileExtension);
+            }
+            else
+            {
+                return PhysicalFile(downloadFile.PhysicalPath, MediaTypeNames.Application.Octet, detailsViewModel.FullName);
+            }
+             
 
         }
     }
