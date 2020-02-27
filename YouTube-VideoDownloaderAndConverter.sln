@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTube-VideoDownloaderAndConverter", "YouTube-VideoDownloaderAndConverter\YouTube-VideoDownloaderAndConverter.csproj", "{833DF31D-94A8-4C96-B929-A1EF19F21254}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouTube-Video-Audio-Downloader-Asp.Net-Core", "YouTube-VideoDownloaderAndConverter\YouTube-Video-Audio-Downloader-Asp.Net-Core.csproj", "{833DF31D-94A8-4C96-B929-A1EF19F21254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
