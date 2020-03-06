@@ -63,7 +63,6 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 details.Format = FileType.Mp3;
             }
 
-
             return details;
         }
 
@@ -71,50 +70,24 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         public async Task DownloadFile(Uri link,IConfiguration configuration)
         { 
 
-             
             string templink = link.OriginalString;
 
             templink = templink.Replace("watch?", "");
             templink = templink.Replace("=", "/");
 
 
-
-
-
             var youTube = YouTube.Default; // starting point for YouTube actions
-
             var video = youTube.GetVideo(templink); // gets a Video object with info about the video
 
 
             byte[] current = await video.GetBytesAsync();
 
             UploadToServerModel uploadToServerModel = new UploadToServerModel(configuration);
-             
-
             await uploadToServerModel.OnPostUploadAsync(current,video.FullName);
-
             
-
-
         }
 
-        public string FormatFileSize(byte[] bytes)
-        {
-          
-
-            if (bytes.Count() >= 1000000000)
-            {
-                return (bytes.Count() / 1000000000).ToString().Substring(0,3) + " GB";
-            }
-
-            if (bytes.Count() >= 1000000)
-            {
-                return (bytes.Count() / 1000000).ToString().Substring(0, 3) + " MB";
-            }
-
-            return (bytes.Count() / 1000).ToString().Substring(0, 3) + " KB";
-        }
-
+       
     }
      
 }

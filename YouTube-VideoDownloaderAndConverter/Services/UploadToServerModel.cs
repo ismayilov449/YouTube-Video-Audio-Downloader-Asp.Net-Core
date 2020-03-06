@@ -25,11 +25,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         {
             _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
 
-            // To save physical files to a path provided by configuration:
-            //_targetFilePath = config.GetValue<string>("StoredFilesPath");
             _targetFilePath = Directory.GetCurrentDirectory() + @"\wwwroot\";
-            // To save physical files to the temporary files folder, use:
-            //_targetFilePath = Path.GetTempPath();
         }
 
         [BindProperty]
@@ -44,30 +40,14 @@ namespace YouTube_VideoDownloaderAndConverter.Services
         public async Task OnPostUploadAsync(byte[] currentFile,string fileName)
         {
 
-
-            // For the file name of the uploaded file stored
-            // server-side, use Path.GetRandomFileName to generate a safe
-            // random file name.
             var trustedFileNameForFileStorage = fileName;
             var filePath = Path.Combine(
                 _targetFilePath, trustedFileNameForFileStorage);
-
-            // **WARNING!**
-            // In the following example, the file is saved without
-            // scanning the file's contents. In most production
-            // scenarios, an anti-virus/anti-malware scanner API
-            // is used on the file before making the file available
-            // for download or for use by other systems. 
-            // For more information, see the topic that accompanies 
-            // this sample.
-
+ 
             using (var fileStream = System.IO.File.Create(filePath))
             {
                 await fileStream.WriteAsync(currentFile);
 
-                // To work directly with a FormFile, use the following
-                // instead:
-                //await FileUpload.FormFile.CopyToAsync(fileStream);
             }
 
         }

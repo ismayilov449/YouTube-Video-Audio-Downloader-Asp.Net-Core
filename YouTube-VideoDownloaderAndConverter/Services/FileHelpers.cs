@@ -15,11 +15,9 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 {
     public static class FileHelpers
     {
-        // If you require a check on specific characters in the IsValidFileExtensionAndSignature
-        // method, supply the characters in the _allowedChars field.
+        
         private static readonly byte[] _allowedChars = { };
-        // For more file signatures, see the File Signatures Database (https://www.filesignatures.net/)
-        // and the official specifications for the file types you wish to add.
+        
         private static readonly Dictionary<string, List<byte[]>> _fileSignature = new Dictionary<string, List<byte[]>>
         {
             { ".gif", new List<byte[]> { new byte[] { 0x47, 0x49, 0x46, 0x38 } } },
@@ -50,23 +48,13 @@ namespace YouTube_VideoDownloaderAndConverter.Services
             },
         };
 
-        // **WARNING!**
-        // In the following file processing methods, the file's content isn't scanned.
-        // In most production scenarios, an anti-virus/anti-malware scanner API is
-        // used on the file before making the file available to users or other
-        // systems. For more information, see the topic that accompanies this sample
-        // app.
-
+        
         public static async Task<byte[]> ProcessFormFile<T>(IFormFile formFile,
              string[] permittedExtensions,
             long sizeLimit)
         {
             var fieldDisplayName = string.Empty;
 
-            // Use reflection to obtain the display name for the model
-            // property associated with this IFormFile. If a display
-            // name isn't found, error messages simply won't show
-            // a display name.
             MemberInfo property =
                 typeof(T).GetProperty(
                     formFile.Name.Substring(formFile.Name.IndexOf(".",
@@ -81,17 +69,12 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 }
             }
 
-            // Don't trust the file name sent by the client. To display
-            // the file name, HTML-encode the value.
             var trustedFileNameForDisplay = WebUtility.HtmlEncode(
                 formFile.FileName);
 
-            // Check the file length. This check doesn't catch files that only have 
-            // a BOM as their content.
             if (formFile.Length == 0)
             {
                 
-
                 return new byte[0];
             }
 
@@ -108,14 +91,6 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 using (var memoryStream = new MemoryStream())
                 {
                     await formFile.CopyToAsync(memoryStream);
-
-                    // Check the content length in case the file's only
-                    // content was a BOM and the content is actually
-                    // empty after removing the BOM.
-                    if (memoryStream.Length == 0)
-                    {
-                      
-                    }
 
                     if (!IsValidFileExtensionAndSignature(
                         formFile.FileName, memoryStream, permittedExtensions))
@@ -146,7 +121,6 @@ namespace YouTube_VideoDownloaderAndConverter.Services
                 {
                     await section.Body.CopyToAsync(memoryStream);
 
-                    // Check if the file is empty or exceeds the size limit.
                     if (memoryStream.Length == 0)
                     {
                       
@@ -224,25 +198,7 @@ namespace YouTube_VideoDownloaderAndConverter.Services
 
                     return true;
                 }
-
-                // Uncomment the following code block if you must permit
-                // files whose signature isn't provided in the _fileSignature
-                // dictionary. We recommend that you add file signatures
-                // for files (when possible) for all file types you intend
-                // to allow on the system and perform the file signature
-                // check.
-                /*
-                if (!_fileSignature.ContainsKey(ext))
-                {
-                    return true;
-                }
-                */
-
-                // File signature check
-                // --------------------
-                // With the file signatures provided in the _fileSignature
-                // dictionary, the following code tests the input content's
-                // file signature.
+ 
                 var signatures = _fileSignature[ext];
                 var headerBytes = reader.ReadBytes(signatures.Max(m => m.Length));
 

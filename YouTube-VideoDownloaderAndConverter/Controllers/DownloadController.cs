@@ -17,7 +17,6 @@ using YouTube_VideoDownloaderAndConverter.Models;
 using YouTube_VideoDownloaderAndConverter.Models.Enums;
 using YouTube_VideoDownloaderAndConverter.Services;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace YouTube_VideoDownloaderAndConverter.Controllers
 {
@@ -62,19 +61,7 @@ namespace YouTube_VideoDownloaderAndConverter.Controllers
             return RedirectToAction("DownloadFile");
         }
 
-
-        //[HttpGet]
-        //public async Task<IActionResult> DownloadFile(Uri link)
-        //{
-             
-        //    Downloader downloader = new Downloader(fileProvider, configuration);
-        //    var details = downloader.SearchFile(link);
-
-        //    DetailsViewModelMain = details;
-
-        //    return View(details);
-        //}
-
+ 
         [HttpGet]
         public async Task<IActionResult> DownloadFile()
         {
